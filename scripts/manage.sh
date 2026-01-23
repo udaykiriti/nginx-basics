@@ -1,11 +1,30 @@
 #!/bin/bash
 
-GREEN='\033[0;32m'
-BLUE='\033[0;34m'
+#colors
+BLACK='\033[0;30m'
 RED='\033[0;31m'
-NC='\033[0m' 
+GREEN='\033[0;32m'
+YELLOW='\033[0;33m'
+BLUE='\033[0;34m'
+MAGENTA='\033[0;35m'
+CYAN='\033[0;36m'
+WHITE='\033[0;37m'
 
-echo -e "${GREEN}"
+# Reset
+RESET='\033[0m'
+NC='\033[0m'
+
+# Styles
+BOLD='\033[1m'
+REVERSE='\033[7m'
+HIDDEN='\033[8m'
+BRIGHT='\033[1m'
+DIM='\033[2m'
+UNDERLINE='\033[4m'
+BLINK='\033[5m'
+
+
+echo -e "${GREEN}${BRIGHT}"
 echo " _   _  _____ _____ _   _ __   __"
 echo "| \ | ||  __ \_   _| \ | |\ \ / /"
 echo "|  \| || |  \/ | | |  \| | \ V / "
@@ -13,7 +32,7 @@ echo "| . \` || | __  | | | . \` | /   \ "
 echo "| |\  || |\_\ \_| |_| |\  |/ /^\ \ "
 echo "\_| \_|\____/\___/\_| \_\/   \/ "
 echo -e "${NC}"
-echo -e "${BLUE}=== NGINX PLAYGROUND MANAGER ===${NC}"
+echo -e "${BLUE} [NGINX PLAYGROUND]${NC}"
 echo ""
 
 # Ensure we are in the Project Root
@@ -35,7 +54,7 @@ function _stop {
     pkill -f "backend-v2.py" 2>/dev/null
     pkill -f "backend-green.py" 2>/dev/null
     sleep 1
-    echo "Services stopped."
+    echo "${RED}[Stop]: Services stopped.${NC}"
 }
 
 function _start {
@@ -54,18 +73,18 @@ function _start {
     echo -e "${GREEN}[+] Starting Nginx...${NC}"
 
     if ! command -v nginx &> /dev/null; then
-         echo -e "${RED}Error: 'nginx' command not found. Please install Nginx.${NC}"
+         echo -e "${RED}[Error]: 'nginx' command not found. Please install Nginx.${NC}"
          exit 1
     fi
 
     nginx -p "$(pwd)/" -c "conf/nginx.conf" -e "logs/error.log"
 
     if [ $? -eq 0 ]; then
-        echo -e "${BLUE}>>> System Online! <<<${NC}"
-        echo -e "Dashboard: ${GREEN}https://localhost:8443/dashboard.html${NC}"
-        echo -e "API:       ${GREEN}https://localhost:8443/api${NC}"
+        echo -e "${BLUE}>>> [System Online!] <<<${NC}"
+        echo -e "[Dashboard]: ${GREEN}https://localhost:8443/dashboard.html${NC}"
+        echo -e "[API]:       ${GREEN}https://localhost:8443/api${NC}"
     else
-        echo -e "${RED}Failed to start Nginx. Check logs/error.log${NC}"
+        echo -e "${RED}${BRIGHT}[404]: Failed to start Nginx. Check logs/error.log${NC}"
     fi
 }
 
@@ -73,9 +92,10 @@ function _reload {
     echo -e "${BLUE}[*] Reloading Nginx configuration...${NC}"
     if [ -f nginx.pid ]; then
         kill -HUP $(cat nginx.pid)
-        echo "Configuration reloaded..."
+        echo "[Loading]: Configuration reloaded..."
+        echo "[Wait]: Hold tight[{()}]"
     else
-        echo -e "${RED}Error: Nginx is not running...${NC}"
+        echo -e "${RED}${BRIGHT}[Error]: Nginx is not running...${NC}"
     fi
 }
 
@@ -93,8 +113,8 @@ case "$1" in
         _reload
         ;;
     *)
-        echo "Usage: $0 {start|stop|restart|reload}"
-        echo "Example: ./scripts/manage.sh start"
+        echo "[Usage]: $0 {start|stop|restart|reload}"
+        echo "[Example]: ./scripts/manage.sh start"
         exit 1
         ;;
 esac
