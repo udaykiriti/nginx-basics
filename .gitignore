@@ -1,0 +1,13 @@
+logs/
+*.log
+
+# Temp files
+temp/
+__pycache__/
+*.pid
+
+# System
+.DS_Store
+
+# Password file (optional: usually you don't commit secrets, but for this learning repo we might)
+# conf/.htpasswd

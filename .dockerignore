@@ -1,0 +1,9 @@
+.git
+.gitignore
+README.md
+logs/
+temp/
+scripts/start.sh
+scripts/stop.sh
+conf/nginx.conf
+docker-compose.yml
