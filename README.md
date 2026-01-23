@@ -10,7 +10,7 @@ Run the management script from the project root:
 # Start the entire stack (Nginx + All Backend Nodes)
 ./scripts/manage.sh start
 
-# Stop the started things..
+# Stop the things..
 ./scripts/manage.sh stop
 
 # Apply config changes without downtime
