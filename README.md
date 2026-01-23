@@ -18,6 +18,7 @@ Run the management script from the project root:
 ```
 
 **Access the Frontend Gateway:** https://localhost:8080/index.html
+
 **Access the API Gateway:** https://localhost:8443/status
 
 ---
