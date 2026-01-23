@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Nginx Demo - Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="about.html">About</a></li>
+                <li><a href="dashboard.html">Dashboard</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="container">
+        <h1>Backend Dashboard</h1>
+        <p>Test the connection to the load-balanced Python backends.</p>
+        
+        <div class="card">
+            <h3>Live API Test</h3>
+            <p>Click the button below to fetch data from <code>/api</code>.</p>
+            
+            <div style="margin-bottom: 15px;">
+                <label>
+                    <input type="checkbox" id="v2-toggle" onchange="toggleV2(this)"> 
+                    <strong>Opt-in to Experimental v2</strong>
+                </label>
+            </div>
+
+            <div style="margin-bottom: 15px;">
+                <label>
+                    <strong>Premium Key:</strong> 
+                    <input type="text" id="premium-key" placeholder="Enter key..." style="padding:5px;">
+                </label>
+            </div>
+
+            <div style="margin-bottom: 15px;">
+                <label>
+                    <strong>Target Environment:</strong> 
+                    <select id="env-selector" style="padding:5px;">
+                        <option value="blue">Blue (Standard)</option>
+                        <option value="green">Green (New Deployment)</option>
+                    </select>
+                </label>
+            </div>
+
+            <button onclick="fetchData()">Ping Backend</button>
+            <div id="api-response"></div>
+        </div>
+
+        <div class="card" style="border-left-color: #9b59b6;">
+            <h3>Secure Content</h3>
+            <p>Try to access the protected secret file:</p>
+            <a href="/secure/secret.html" target="_blank"><button style="background-color:#9b59b6;">View Secret (Direct Access)</button></a>
+            <p><small>(This will fail with a 403 because it requires a token)</small></p>
+        </div>
+
+    <script>
+        // Auth Header (admin:secret)
+        const authHeader = { 'Authorization': 'Basic ' + btoa('admin:secret') };
+
+        async function fetchData() {
+            const display = document.getElementById('api-response');
+            const premiumKey = document.getElementById('premium-key').value;
+            const targetEnv = document.getElementById('env-selector').value;
+            display.innerText = "Loading...";
+            
+            try {
+                // Pointing to the Dedicated API Gateway (Port 8443)
+                const response = await fetch('https://localhost:8443/api', { 
+                    headers: {
+                        ...authHeader,
+                        'X-Premium-Key': premiumKey,
+                        'X-Target-Env': targetEnv
+                    }
+                });
+                if (response.ok) {
+                    const text = await response.text();
+                    const reqId = response.headers.get('X-Request-ID');
+                    const cacheStatus = response.headers.get('X-Cache-Status');
+                    const responseTime = response.headers.get('X-Response-Time');
+                    const env = response.headers.get('X-Environment');
+                    
+                    display.innerHTML = `
+                        <div style="margin-top:10px; padding:10px; border:1px solid #ddd; background:#fff;">
+                            <strong>Environment:</strong> <span style="color:${env === 'green' ? '#2ecc71' : '#3498db'}">${env.toUpperCase()}</span><br>
+                            <strong>Response:</strong> ${text}<br>
+                            <strong>Cache:</strong> <span style="color:${cacheStatus === 'HIT' ? 'green' : 'orange'}">${cacheStatus}</span><br>
+                            <strong>Response Time:</strong> ${responseTime}s<br>
+                            <strong>Request ID:</strong> <small>${reqId}</small>
+                        </div>`;
+                } else {
+                    display.innerText = "Error: " + response.status + " " + response.statusText;
+                }
+            } catch (error) {
+                display.innerText = "Network Error: " + error.message;
+            }
+        }
+
+        async function fetchStats() {
+            const display = document.getElementById('stats-response');
+            display.innerText = "Loading...";
+            
+            try {
+                // Pointing to the Dedicated API Gateway (Port 8443)
+                const response = await fetch('https://localhost:8443/status', { headers: authHeader });
+                if (response.ok) {
+                    const text = await response.text();
+                    display.innerText = text;
+                } else {
+                    display.innerText = "Error: " + response.status;
+                }
+            } catch (error) {
+                display.innerText = "Error: " + error.message;
+            }
+        }
+    </script>
+</body>
+</html>
