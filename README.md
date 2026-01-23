@@ -53,7 +53,41 @@ Run the management script from the project root:
 
 ---
 
+## What You’ll Learn
+
+By working through this project, you’ll understand:
+
+- How Nginx works as a reverse proxy and API gateway
+- Zero-downtime reloads and traffic shifting
+- Blue/Green deployments and A/B testing at the edge
+- Rate limiting strategies for SaaS systems
+- Secure authentication using Basic Auth and headers
+- Real-world Nginx security hardening techniques
+
+---
+
 ## Credentials
-- Username: admin
-- Password: secret
-- Premium Key: premium-secret
+- Username: *****
+- Password: *****
+- Premium Key: *******-*****
+
+---
+
+## Security Notes
+
+This repository is a **learning playground**.
+
+-  Private keys (`*.key`, `*.pem`) are **never committed**
+-  Authentication files (`.htpasswd`) are **ignored**
+-  Secrets are managed via local files or environment variables
+-  Do NOT reuse passwords or keys from this project anywhere else
+
+See `.gitignore` for enforced protections.
+
+
+## Disclaimer
+
+This project is for **educational purposes only**.
+
+It is **not production-ready** and should not be deployed on
+public servers without proper security review.
