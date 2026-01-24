@@ -18,12 +18,22 @@ fi
 
 echo "Rotating logs..."
 
-# Rename current logs
-[ -f "$LOG_DIR/access.log" ] && mv "$LOG_DIR/access.log" "$LOG_DIR/access.log.$TIMESTAMP"
-[ -f "$LOG_DIR/error.log" ] && mv "$LOG_DIR/error.log" "$LOG_DIR/error.log.$TIMESTAMP"
+# Rename current logs and compress them
+if [ -f "$LOG_DIR/access.log" ]; then
+    mv "$LOG_DIR/access.log" "$LOG_DIR/access.log.$TIMESTAMP"
+    gzip "$LOG_DIR/access.log.$TIMESTAMP"
+fi
+
+if [ -f "$LOG_DIR/error.log" ]; then
+    mv "$LOG_DIR/error.log" "$LOG_DIR/error.log.$TIMESTAMP"
+    gzip "$LOG_DIR/error.log.$TIMESTAMP"
+fi
 
 # Send USR1 signal to Nginx master process to re-open log files
 kill -USR1 $(cat $PID_FILE)
 
-echo "${GREEN}[Logs]: Logs rotated successfully.${NC}"
+# Cleanup old logs (older than 7 days)
+find "$LOG_DIR" -name "*.gz" -mtime +7 -delete
+
+echo "${GREEN}[Logs]: Logs rotated and compressed successfully.${NC}"
 echo "${GREEN}[Updated]: New logs started. Old logs archived with timestamp $TIMESTAMP."

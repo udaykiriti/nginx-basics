@@ -50,11 +50,17 @@ function _stop {
     else
         pkill -f "nginx -p" 2>/dev/null
     fi
-    pkill -f "backend.py" 2>/dev/null
-    pkill -f "backend-v2.py" 2>/dev/null
-    pkill -f "backend-green.py" 2>/dev/null
+
+    # Kill backends via PID files
+    for pid_file in logs/*.pid; do
+        if [ -f "$pid_file" ]; then
+            kill $(cat "$pid_file") 2>/dev/null
+            rm -f "$pid_file"
+        fi
+    done
+
     sleep 1
-    echo "${RED}[Stop]: Services stopped.${NC}"
+    echo -e "${RED}[Stop]: Services stopped.${NC}"
 }
 
 function _start {
@@ -63,10 +69,18 @@ function _start {
 
     echo -e "${GREEN}[+] Starting Python Backends (Blue/Green/V2)...${NC}"
     mkdir -p logs
+    
     nohup python3 scripts/backend.py 8081 > logs/backend1.log 2>&1 &
+    echo $! > logs/backend1.pid
+
     nohup python3 scripts/backend.py 8082 > logs/backend2.log 2>&1 &
+    echo $! > logs/backend2.pid
+
     nohup python3 scripts/backend-v2.py 8083 > logs/backend-v2.log 2>&1 &
+    echo $! > logs/backend-v2.pid
+
     nohup python3 scripts/backend-green.py 8084 > logs/backend-green.log 2>&1 &
+    echo $! > logs/backend-green.pid
 
     sleep 1
 

@@ -3,7 +3,7 @@ from http.server import BaseHTTPRequestHandler, HTTPServer
 
 port = int(sys.argv[1]) if len(sys.argv) > 1 else 8081
 # Simulate latency if provided as 2nd argument (in seconds)
-delay = float(sys.argv[2]) if len(sys.argv) >= 2 else 0
+delay = float(sys.argv[2]) if len(sys.argv) > 2 else 0
 
 class _handler(BaseHTTPRequestHandler):
     def do_GET(self):
