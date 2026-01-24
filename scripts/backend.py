@@ -1,9 +1,13 @@
 import sys, time
 from http.server import BaseHTTPRequestHandler, HTTPServer
+from socketserver import ThreadingMixIn
 
 port = int(sys.argv[1]) if len(sys.argv) > 1 else 8081
 # Simulate latency if provided as 2nd argument (in seconds)
 delay = float(sys.argv[2]) if len(sys.argv) > 2 else 0
+
+class ThreadingHTTPServer(ThreadingMixIn, HTTPServer):
+    daemon_threads = True
 
 class _handler(BaseHTTPRequestHandler):
     def do_GET(self):
@@ -16,6 +20,6 @@ class _handler(BaseHTTPRequestHandler):
         self.wfile.write(response.encode())
 
 server_addr = ('', port)
-httpd = HTTPServer(server_addr, _handler)
-print(f"Backend running on port {port} with delay {delay}s...")
+httpd = ThreadingHTTPServer(server_addr, _handler)
+print(f"Backend running on port {port} with delay {delay}s (Multi-threaded)...")
 httpd.serve_forever()

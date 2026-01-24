@@ -52,6 +52,24 @@
             <div id="api-response"></div>
         </div>
 
+        <div class="card" style="border-left-color: #e74c3c;">
+            <h3> Security Check (WAF)</h3>
+            <p>Test the new Firewall rules by simulating attacks:</p>
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                <button onclick="testAttack('?id=1 union select 1')" style="background-color:#e74c3c;">SQL Injection</button>
+                <button onclick="testAttack('?path=../../etc/passwd')" style="background-color:#c0392b;">Path Traversal</button>
+                <button onclick="testAttack('?q=<script>alert(1)</script>')" style="background-color:#d35400;">XSS Attack</button>
+            </div>
+            <div id="waf-response" style="margin-top:10px; font-family:monospace;"></div>
+        </div>
+
+        <div class="card" style="border-left-color: #34495e;">
+            <h3> Live Server Status</h3>
+            <p>Real-time metrics from Nginx <code>stub_status</code>:</p>
+            <button onclick="fetchStats()" style="background-color:#34495e;">Refresh Stats</button>
+            <pre id="stats-response" style="background:#f4f4f4; padding:10px; margin-top:10px;">Click to load...</pre>
+        </div>
+
         <div class="card" style="border-left-color: #9b59b6;">
             <h3>Secure Content</h3>
             <p>Try to access the protected secret file:</p>
@@ -62,6 +80,23 @@
     <script>
         // Auth Header (admin:secret)
         const authHeader = { 'Authorization': 'Basic ' + btoa('admin:secret') };
+
+        async function testAttack(queryString) {
+            const display = document.getElementById('waf-response');
+            display.innerText = "Simulating attack...";
+            try {
+                const response = await fetch('https://localhost:8443/api' + queryString, { 
+                    headers: authHeader
+                });
+                if (response.status === 403) {
+                     display.innerHTML = `<span style="color:green">BLOCKED (403 Forbidden)</span> - WAF is working!`;
+                } else {
+                     display.innerHTML = `<span style="color:red"> FAILED (${response.status})</span> - Attack went through!`;
+                }
+            } catch (error) {
+                display.innerText = "Error: " + error.message;
+            }
+        }
 
         async function fetchData() {
             const display = document.getElementById('api-response');
