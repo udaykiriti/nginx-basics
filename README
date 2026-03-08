@@ -1,0 +1,9 @@
+Nginx Learning Playground
+=========================
+
+This repo is a local learning environment for practicing Nginx gateway, routing, and proxy patterns.
+
+It includes configuration examples, backend services, 
+and helper scripts for running experiments safely on a local machine.
+
+/* For setup, commands, and detailed notes, see the docs folder. */
